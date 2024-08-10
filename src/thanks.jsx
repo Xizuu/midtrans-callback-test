@@ -1,12 +1,14 @@
 function Thanks() {
 
-    const data = fetch('https://midtrans-restapi-test.vercel.app/transaction/callback')
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error('Response was not OK')
-            }
-            return response.json()
-        });
+    // const data = fetch('https://midtrans-restapi-test.vercel.app/transaction/callback')
+    //     .then((response) => {
+    //         if (!response.ok) {
+    //             throw new Error('Response was not OK')
+    //         }
+    //         return response.json()
+    //     });
+    const url = new URLSearchParams(window.location.search)
+    const orderId = url.get('order_id');
 
     return (
         <>
@@ -20,9 +22,7 @@ function Thanks() {
                     <div className="text-center">
                         <h3 className="md:text-2xl text-base text-gray-900 font-semibold text-center">Payment Done!</h3>
                         <p className="text-gray-600 my-2">Transaction ID: #{
-                                data.then((response) => {
-                                    console.log(response.json())
-                                })
+                                orderId
                             }</p>
                         <div className="py-10 text-center">
                             <a href="#" className="px-12 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3">
