@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 function Thanks() {
-    const url = new URLSearchParams(window.location.search);
-    const orderId = url.get('order_id');
-    
-    const [transStatus, setTransStatus] = useState(null);
+    const location = useLocation();
     const navigate = useNavigate();
+    const [transStatus, setTransStatus] = useState(null);
+    
+    const url = new URLSearchParams(location.search);
+    const orderId = url.get('order_id');
+    const initialUrl = location.pathname + location.search;
 
     const getStatusMessage = (transaction_status) => {
         if (transaction_status === 'pending') {
@@ -55,6 +57,12 @@ function Thanks() {
         }
 
     }, [orderId, navigate]);
+
+    useEffect(() => {
+        if (location.pathname + location.search !== initialUrl) {
+            navigate(initialUrl, { replace: true });
+        }
+    }, [location, initialUrl, navigate]);
 
     const statusMessage = getStatusMessage(transStatus);
 
