@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function Thanks() {
     const url = new URLSearchParams(window.location.search);
     const orderId = url.get('order_id');
     
     const [transStatus, setTransStatus] = useState(null);
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const getStatusMessage = (transaction_status) => {
         if (transaction_status === 'pending') {
@@ -44,17 +44,17 @@ function Thanks() {
                 setTransStatus(data.transaction_status);
             } catch (error) {
                 console.error('Error fetching transaction status:', error);
-                history.push('/error');
+                navigate('/error');
             }
         };
 
         if (orderId) {
             fetchTransactionStatus();
         } else {
-            history.push('/error');
+            navigate('/error');
         }
 
-    }, [orderId, history]);
+    }, [orderId, navigate]);
 
     const statusMessage = getStatusMessage(transStatus);
 
