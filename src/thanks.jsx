@@ -24,11 +24,13 @@ function Thanks() {
     useEffect(() => {
         const checkTransactionStatus = async () => {
             try {
-                const response = await fetch('https://midtrans-callback-test.vercel.app/transaction', {
-                        method: 'POST',
-                        body: JSON.stringify({ orderId })
-                    }
-                );
+                const response = await fetch('https://midtrans-restapi-test.vercel.app/transaction/callback', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ orderId })
+                });
                 const data = await response.json();
                 
                 if (data.transaction_status === 'settlement') {
