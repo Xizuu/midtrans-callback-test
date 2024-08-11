@@ -3,9 +3,8 @@ import React, { useState, useEffect } from 'react';
 function Thanks() {
     const url = new URLSearchParams(window.location.search);
     const orderId = url.get('order_id');
-    const initialTransStatus = url.get('transaction_status');
     
-    const [transStatus, setTransStatus] = useState(initialTransStatus);
+    const [transStatus, setTransStatus] = useState(null); // Awalnya status tidak diketahui
 
     const getStatusMessage = (transaction_status) => {
         if (transaction_status === 'pending') {
@@ -22,7 +21,7 @@ function Thanks() {
     const statusMessage = getStatusMessage(transStatus);
 
     useEffect(() => {
-        const checkTransactionStatus = async () => {
+        const fetchTransactionStatus = async () => {
             try {
                 const response = await fetch('https://midtrans-restapi-test.vercel.app/transaction/callback', {
                     method: 'POST',
@@ -32,19 +31,18 @@ function Thanks() {
                     body: JSON.stringify({ orderId })
                 });
                 const data = await response.json();
-                
-                if (data.transaction_status === 'settlement') {
-                    setTransStatus('settlement');
-                }
+                setTransStatus(data.transaction_status); // Set status transaksi dari respons backend
             } catch (error) {
                 console.error('Error fetching transaction status:', error);
             }
         };
 
-        const intervalId = setInterval(checkTransactionStatus, 5000);
+        fetchTransactionStatus();
+
+        const intervalId = setInterval(fetchTransactionStatus, 5000); // Cek status setiap 5 detik
 
         if (transStatus === 'settlement') {
-            clearInterval(intervalId);
+            clearInterval(intervalId); // Hentikan pengecekan jika status sudah 'settlement'
         }
 
         return () => clearInterval(intervalId);
