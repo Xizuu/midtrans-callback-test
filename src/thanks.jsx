@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 
 function Thanks() {
     const url = new URLSearchParams(window.location.search);
     const orderId = url.get('order_id');
     
-    const [transStatus, setTransStatus] = useState(null); // Awalnya status tidak diketahui
+    const [transStatus, setTransStatus] = useState(null);
+    const history = useHistory();
 
     const getStatusMessage = (transaction_status) => {
         if (transaction_status === 'pending') {
@@ -18,8 +20,6 @@ function Thanks() {
         }
     };
 
-    const statusMessage = getStatusMessage(transStatus);
-
     useEffect(() => {
         const fetchTransactionStatus = async () => {
             try {
@@ -30,23 +30,33 @@ function Thanks() {
                     },
                     body: JSON.stringify({ orderId })
                 });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch transaction status');
+                }
+
                 const data = await response.json();
-                setTransStatus(data.transaction_status); // Set status transaksi dari respons backend
+                
+                if (!data.transaction_status) {
+                    throw new Error('Invalid transaction status');
+                }
+
+                setTransStatus(data.transaction_status);
             } catch (error) {
                 console.error('Error fetching transaction status:', error);
+                history.push('/error');
             }
         };
 
-        fetchTransactionStatus();
-
-        const intervalId = setInterval(fetchTransactionStatus, 5000); // Cek status setiap 5 detik
-
-        if (transStatus === 'settlement') {
-            clearInterval(intervalId); // Hentikan pengecekan jika status sudah 'settlement'
+        if (orderId) {
+            fetchTransactionStatus();
+        } else {
+            history.push('/error');
         }
 
-        return () => clearInterval(intervalId);
-    }, [orderId, transStatus]);
+    }, [orderId, history]);
+
+    const statusMessage = getStatusMessage(transStatus);
 
     return (
         <div className="bg-gray-100 h-screen">
@@ -59,7 +69,7 @@ function Thanks() {
                         <p className="text-gray-600 my-2">Transaction ID: {orderId ?? 'Null'}</p>
                     )}
                     <div className="py-10 text-center">
-                        <a href="#" className="px-12 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3">
+                        <a href="/" className="px-12 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3">
                             GO BACK
                         </a>
                     </div>
