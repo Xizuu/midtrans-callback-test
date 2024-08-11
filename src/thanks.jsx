@@ -46,17 +46,15 @@ function Thanks() {
                 setTransStatus(data.transaction_status);
             } catch (error) {
                 console.error('Error fetching transaction status:', error);
-                navigate('/error');
+            
             }
         };
 
         if (orderId) {
             fetchTransactionStatus();
-        } else {
-            navigate('/error');
         }
 
-    }, [orderId, navigate]);
+    }, [orderId]);
 
     useEffect(() => {
         if (location.pathname + location.search !== initialUrl) {
