@@ -1,88 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-
 function Thanks() {
-    const location = useLocation();
-    const navigate = useNavigate();
-    const [transStatus, setTransStatus] = useState(null);
-    
-    const url = new URLSearchParams(location.search);
-    const orderId = url.get('order_id');
-    const initialUrl = location.pathname + location.search;
-
-    const getStatusMessage = (transaction_status) => {
-        if (transaction_status === 'pending') {
-            return 'Transaction Pending!';
-        } else if (transaction_status === 'expire') {
-            return 'Transaction Expired!';
-        } else if (transaction_status === 'settlement') {
-            return 'Transaction Done!';
-        } else {
-            return 'Unknown Transaction Status';
-        }
-    };
-
-    useEffect(() => {
-        const fetchTransactionStatus = async () => {
-            try {
-                const response = await fetch('https://midtrans-restapi-test.vercel.app/transaction/callback', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ orderId })
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Failed to fetch transaction status');
-                }
-
-                const data = await response.json();
-                
-                if (!data.transaction_status) {
-                    throw new Error('Invalid transaction status');
-                }
-
-                setTransStatus(data.transaction_status);
-            } catch (error) {
-                console.error('Error fetching transaction status:', error);
-            
-            }
-        };
-
-        if (orderId) {
-            fetchTransactionStatus();
-        }
-
-    }, [orderId]);
-
-    useEffect(() => {
-        if (location.pathname + location.search !== initialUrl) {
-            navigate(initialUrl, { replace: true });
-        }
-    }, [location, initialUrl, navigate]);
-
-    const statusMessage = getStatusMessage(transStatus);
 
     return (
-        <div className="bg-gray-100 h-screen">
-            <div className="bg-white p-6 md:mx-auto">
-                <div className="text-center">
-                    <h3 className="md:text-2xl text-base text-gray-900 font-semibold text-center">
-                        {statusMessage}
-                    </h3>
-                    {statusMessage !== 'Unknown Transaction Status' && (
-                        <p className="text-gray-600 my-2">Transaction ID: {orderId ?? 'Null'}</p>
-                    )}
-                    <div className="py-10 text-center">
-                        <a href="/" className="px-12 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3">
-                            GO BACK
-                        </a>
+        <>
+            <div className="bg-gray-100 h-screen">
+                <div className="bg-white p-6 md:mx-auto">
+                    <svg viewBox="0 0 24 24" className="text-green-600 w-16 h-16 mx-auto my-6">
+                        <path fill="currentColor"
+                              d="M12,0A12,12,0,1,0,24,12,12.014,12.014,0,0,0,12,0Zm6.927,8.2-6.845,9.289a1.011,1.011,0,0,1-1.43.188L5.764,13.769a1,1,0,1,1,1.25-1.562l4.076,3.261,6.227-8.451A1,1,0,1,1,18.927,8.2Z">
+                        </path>
+                    </svg>
+                    <div className="text-center">
+                        <h3 className="md:text-2xl text-base text-gray-900 font-semibold text-center">Payment Done!</h3>
+                        <p className="text-gray-600 my-2">Thank you for completing your secure online payment.</p>
+                        <p> Have a great day!  </p>
+                        <div className="py-10 text-center">
+                            <a href="#" className="px-12 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3">
+                                GO BACK
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    );
+        </>
+    )
 }
 
-export default Thanks;
+export default Thanks
