@@ -4,6 +4,8 @@ import './index.css'
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import App from './App.jsx'
 import Thanks from "./thanks.jsx";
+import Pending from './pending.jsx';
+import Error from './error.jsx';
 
 const router = createBrowserRouter([
     {
@@ -13,6 +15,14 @@ const router = createBrowserRouter([
     {
         path: "/thanks",
         element: <Thanks />,
+    },
+    {
+        path: "/pending",
+        element: <Pending />,
+    },
+    {
+        path: "/error",
+        element: <Error />,
     },
 ]);
 
